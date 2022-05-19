@@ -15,7 +15,7 @@ var upgrader = websocket.Upgrader{}
 var socketDir = "/socket"
 
 func homePageHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Home page, Websocket at"+socketDir)
+	fmt.Fprintf(w, "Home page, Websocket at "+socketDir)
 }
 
 func main() {

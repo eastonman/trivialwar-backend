@@ -3,6 +3,10 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/eastonman/trivialwar-backend/app/game"
+	"github.com/eastonman/trivialwar-backend/app/user"
+	"github.com/google/uuid"
 )
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
@@ -12,20 +16,23 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Print("Error during connection upgradation:", err)
 		return
 	}
-	defer conn.Close()
 
-	// The event loop
-	for {
-		messageType, message, err := conn.ReadMessage()
-		if err != nil {
-			log.Println("Error during message reading:", err)
-			break
-		}
-		log.Printf("Received: %s", message)
-		err = conn.WriteMessage(messageType, message)
-		if err != nil {
-			log.Println("Error during message writing:", err)
-			break
-		}
+	_, message, err := conn.ReadMessage()
+	if err != nil {
+		log.Println("Error during message reading:", err)
+		return
 	}
+	log.Printf("Received: %s", message)
+
+	// Then create a user instance
+	user := user.User{
+		UUID:   uuid.New(),
+		IP:     nil,
+		WsConn: conn,
+	}
+
+	game.Game.AddUser(&user)
+
+	// Handle the connection to user struct
+	user.HandleConn()
 }
