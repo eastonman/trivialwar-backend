@@ -15,6 +15,9 @@ func (g *game) GetAllUsers() map[string]*user.User {
 	return g.Users
 }
 
-func (g *game) AddUser(user *user.User) {
-	g.Users[user.UUID.String()] = user
+func (g *game) AddUser(u *user.User) {
+	if g.Users == nil {
+		g.Users = make(map[string]*user.User)
+	}
+	g.Users[u.UUID.String()] = u
 }

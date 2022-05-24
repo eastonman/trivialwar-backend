@@ -10,6 +10,7 @@ import (
 )
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Client connected: %s", r.RemoteAddr)
 	// Upgrade our raw HTTP connection to a websocket based one
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
