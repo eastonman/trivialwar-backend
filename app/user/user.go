@@ -1,9 +1,11 @@
 package user
 
 import (
+	"encoding/json"
 	"log"
 	"net"
 
+	scoreboard "github.com/eastonman/trivialwar-backend/app/scoreBoard"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
@@ -29,7 +31,14 @@ func (u *User) HandleConn() {
 				log.Println("Error during message reading:", err)
 				break
 			}
-			log.Println("User struct received: ", message)
+			log.Println("User struct received: ", string(message))
+			message, _ = json.Marshal(scoreboard.ScoreBoard.Entries)
+			err = u.WsConn.WriteMessage(websocket.TextMessage, message)
+			if err != nil {
+				log.Println("Error during message writing", err)
+				break
+			}
+			log.Println("User struct sent: ", string(message))
 		}
 	}()
 }
