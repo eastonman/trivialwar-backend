@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"net"
 	"net/http"
 
 	"github.com/eastonman/trivialwar-backend/app/game"
@@ -18,22 +19,18 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, message, err := conn.ReadMessage()
-	if err != nil {
-		log.Println("Error during message reading:", err)
-		return
-	}
-	log.Printf("Received: %s", message)
+	ip, _, _ := net.SplitHostPort(r.RemoteAddr)
+
+	userIP := net.ParseIP(ip)
 
 	// Then create a user instance
 	user := user.User{
-		UUID:   uuid.New(),
-		IP:     nil,
-		WsConn: conn,
+		UUID:                 uuid.New(),
+		IP:                   userIP,
+		WsConn:               conn,
+		IsMultiplayerPlaying: false,
+		Timer:                nil,
 	}
 
 	game.Game.AddUser(&user)
-
-	// Handle the connection to user struct
-	user.HandleConn()
 }
