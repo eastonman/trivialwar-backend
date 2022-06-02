@@ -3,6 +3,7 @@ package game
 import (
 	"encoding/json"
 	"log"
+	"strconv"
 
 	"github.com/eastonman/trivialwar-backend/app/model"
 	scoreboard "github.com/eastonman/trivialwar-backend/app/scoreBoard"
@@ -60,9 +61,25 @@ func (g *game) HandleConn(u *user.User) {
 				}
 			case model.GetLeaderBoard:
 				message, _ := json.Marshal(scoreboard.ScoreBoard.Entries)
-				if err := u.WsConn.WriteMessage(websocket.TextMessage, message); err != nil {
+				packet, _ := json.Marshal(model.ClientPacket{
+					Type: model.GetLeaderBoard,
+					Data: string(message),
+				})
+				if err := u.WsConn.WriteMessage(websocket.TextMessage, packet); err != nil {
 					log.Println("Error during websocket write: ", err)
 					return
+				}
+			case model.ReportScore:
+				if u.Score, err = strconv.ParseUint(command.Param, 10, 64); err != nil {
+					log.Println("Error parsing score: ", err)
+					continue
+				}
+			case model.JoinUser:
+				if command.Param != "0" {
+					u.PairUser = g.Users[command.Param]
+				} else {
+					// If not a valid user uuid, pair with the user himself
+					u.PairUser = u
 				}
 			}
 		}

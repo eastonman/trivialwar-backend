@@ -12,14 +12,20 @@ type User struct {
 	// Global unique identifier
 	UUID uuid.UUID `json:"uuid"`
 
-	// LAN IP for WebRTC
+	// Access from this IP
 	IP net.IP
 
 	// WebSocket connection to user
-	WsConn *websocket.Conn
+	WsConn *websocket.Conn `json:"-"`
 
 	// Indicates if is playing and in multiplayer-mode
 	IsMultiplayerPlaying bool
 
-	Timer *time.Ticker
+	// PairUser is the user that this user playing with
+	PairUser *User
+
+	// User score
+	Score uint64 `json:"score"`
+
+	Timer *time.Ticker `json:"-"`
 }

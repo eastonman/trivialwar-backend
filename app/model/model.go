@@ -10,11 +10,11 @@ const (
 )
 
 type Command struct {
-	Type  int `json:"type"`
-	Param int `json:"param"`
+	Type  int    `json:"type"`
+	Param string `json:"param"`
 }
 
 type ClientPacket struct {
 	Type int    `json:"type"`
-	Data []byte `json:"data"`
+	Data string `json:"data"`
 }
