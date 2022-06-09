@@ -36,32 +36,41 @@ type User struct {
 }
 
 func (u *User) ReportScore(ctx context.Context) {
+
+	u.Timer = time.NewTicker(1 * time.Second)
 	for {
-		// Send score to user
-
-		// Prepare
-		data := strconv.FormatInt(int64(u.PairUser.Score), 10)
-		clientPacket := model.ClientPacket{
-			Type: model.ReportScore,
-			Data: data,
-		}
-		clientPacketRaw, _ := json.Marshal(clientPacket)
-
-		// Send
-		if err := u.WsConn.WriteMessage(websocket.TextMessage, clientPacketRaw); err != nil {
-			log.Println("Error during websocket write: ", err)
-			return
-		}
-
 		select {
-
-		// If stop signal received, stop the goroutine
+		case <-u.Timer.C:
+			log.Println("Score sent")
+			u.report(ctx)
 		case <-ctx.Done():
+			log.Println("Done")
 			return
-		// else continue to send score
-		default:
-			continue
 		}
-
 	}
+}
+
+func (u *User) report(ctx context.Context) {
+
+	// Send score to user
+
+	// Prepare
+	if u.PairUser == nil {
+		log.Printf("Warning: empty paired user")
+		u.PairUser = u
+		return
+	}
+	data := strconv.FormatInt(int64(u.PairUser.Score), 10)
+	clientPacket := model.ClientPacket{
+		Type: model.ReportScore,
+		Data: data,
+	}
+	clientPacketRaw, _ := json.Marshal(clientPacket)
+
+	// Send
+	if err := u.WsConn.WriteMessage(websocket.TextMessage, clientPacketRaw); err != nil {
+		log.Println("Error during websocket write: ", err)
+		return
+	}
+
 }

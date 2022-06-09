@@ -100,6 +100,7 @@ func (g *game) messageLoop(u *user.User, ctx context.Context) error {
 			}
 
 		case model.StartMultiplayerGame:
+			log.Printf("User %s started multiplayer game", u.UUID.String())
 			// Start a multiplayer game
 
 			// Setup a score report goroutine
