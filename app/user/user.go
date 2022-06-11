@@ -9,13 +9,15 @@ import (
 	"time"
 
 	"github.com/eastonman/trivialwar-backend/app/model"
-	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
 type User struct {
 	// Global unique identifier
-	UUID uuid.UUID `json:"uuid"`
+	Username string `json:"username"`
+
+	// Password, SHA-256
+	Password string `json:"password"`
 
 	// Access from this IP
 	IP net.IP

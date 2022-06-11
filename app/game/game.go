@@ -28,8 +28,7 @@ func (g *game) AddUser(u *user.User) {
 	if g.Users == nil {
 		g.Users = make(map[string]*user.User)
 	}
-	g.Users[u.UUID.String()] = u
-	g.HandleConn(u)
+	g.Users[u.Username] = u
 }
 
 // HandleConn is a non blocking function that start a goroutine to handle further WebSocket messages
@@ -40,7 +39,7 @@ func (g *game) HandleConn(u *user.User) {
 		defer cancel()
 
 		if err := g.messageLoop(u, ctx); err != nil {
-			log.Printf("User %s message loop exited with error: %s", u.UUID.String(), err)
+			log.Printf("User %s message loop exited with error: %s", u.Username, err)
 		}
 	}()
 }
@@ -52,6 +51,9 @@ func (g *game) messageLoop(u *user.User, ctx context.Context) error {
 
 		// If is a stop message, do clean up jobs
 		if websocket.IsCloseError(err, websocket.CloseNormalClosure) {
+			u.Score = 0
+			u.WsConn = nil
+			u.Timer = nil
 			err = fmt.Errorf("user %s exited normally", u.IP.String())
 			return err
 		} else if err != nil {
@@ -100,7 +102,7 @@ func (g *game) messageLoop(u *user.User, ctx context.Context) error {
 			}
 
 		case model.StartMultiplayerGame:
-			log.Printf("User %s started multiplayer game", u.UUID.String())
+			log.Printf("User %s started multiplayer game", u.Username)
 			// Start a multiplayer game
 
 			// Setup a score report goroutine
