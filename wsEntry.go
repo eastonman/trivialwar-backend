@@ -76,11 +76,13 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			user.WsConn = conn
+			user.Online = true
 			game.Game.HandleConn(user)
 			return
 		}
 
 		// If not, create a user instance
+		log.Printf("%s", loginInfo.Username)
 		user := user.User{
 			Username:             loginInfo.Username,
 			Password:             loginInfo.Hash,

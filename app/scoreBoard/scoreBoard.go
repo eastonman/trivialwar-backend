@@ -6,6 +6,7 @@ import (
 
 type Entry struct {
 	UserName string
+	Score    uint64
 	Date     time.Time
 }
 

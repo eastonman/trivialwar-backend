@@ -34,7 +34,15 @@ type User struct {
 	// User score
 	Score uint64 `json:"score"`
 
+	// Report score to user
 	Timer *time.Ticker `json:"-"`
+
+	// Is online
+	Online bool
+
+	// LastOnline
+	HighScore  uint64
+	LastOnline time.Time
 }
 
 func (u *User) ReportScore(ctx context.Context) {
@@ -43,10 +51,8 @@ func (u *User) ReportScore(ctx context.Context) {
 	for {
 		select {
 		case <-u.Timer.C:
-			log.Println("Score sent")
 			u.report(ctx)
 		case <-ctx.Done():
-			log.Println("Done")
 			return
 		}
 	}
