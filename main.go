@@ -11,6 +11,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
+	flag "github.com/spf13/pflag"
 )
 
 var upgrader = websocket.Upgrader{}
@@ -21,7 +22,18 @@ func homePageHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Home page, Websocket at "+socketDir)
 }
 
+var ServerAddr *string = nil
+
+func init() {
+	// command line args definition
+	ServerAddr = flag.String("listen", ":8080", "The listen address for the server")
+
+}
+
 func main() {
+
+	// Parse command line args
+	flag.Parse()
 
 	// Setup signal monitor
 	interruptChan := make(chan os.Signal, 1)
@@ -33,7 +45,7 @@ func main() {
 	router.HandleFunc("/", homePageHandler)
 
 	srv := &http.Server{
-		Addr:    ":8080",
+		Addr:    *ServerAddr,
 		Handler: router,
 	}
 
