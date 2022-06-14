@@ -35,6 +35,7 @@ func (g *game) AddUser(u *user.User) {
 
 // HandleConn is a non blocking function that start a goroutine to handle further WebSocket messages
 func (g *game) HandleConn(u *user.User) {
+	log.Printf("User %s login success", u.Username)
 	// Start a goroutine
 	go func() {
 		ctx, cancel := context.WithCancel(context.Background())
@@ -72,7 +73,7 @@ func (g *game) messageLoop(u *user.User, ctx context.Context) error {
 		}
 
 		// DEBUG
-		log.Println("User struct received: ", string(message_raw))
+		// log.Println("User struct received: ", string(message_raw))
 
 		var command model.Command
 		if err := json.Unmarshal(message_raw, &command); err != nil {

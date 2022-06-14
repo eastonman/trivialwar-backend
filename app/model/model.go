@@ -7,7 +7,7 @@ const (
 	ReportScore
 	GetLeaderBoard
 	Login
-	Bye
+	Signup
 )
 
 type Command struct {
@@ -21,6 +21,11 @@ type ClientPacket struct {
 }
 
 type LoginInfo struct {
+	Username string `json:"username"`
+	Hash     string `json:"hash"` // should be SHA-256
+}
+
+type SignupInfo struct {
 	Username string `json:"username"`
 	Hash     string `json:"hash"` // should be SHA-256
 }
