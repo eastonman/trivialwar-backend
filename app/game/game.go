@@ -68,6 +68,16 @@ func (g *game) messageLoop(u *user.User, ctx context.Context) error {
 			err = fmt.Errorf("user %s exited normally", u.IP.String())
 			return err
 		} else if err != nil {
+			// HighScore
+			if u.Score > u.HighScore {
+				u.HighScore = u.Score
+			}
+			// Cleanup
+			u.Score = 0
+			u.WsConn = nil
+			u.Timer = nil
+			u.Online = false
+			u.LastOnline = time.Now()
 			log.Println("Error during message reading:", err)
 			return err
 		}
